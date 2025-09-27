@@ -1,6 +1,6 @@
 {
-    "name": "a4a_mobile_app",
-    "short_name": "a4a_mobile_app",
+    "name": "a4a_first",
+    "short_name": "a4a_first",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
