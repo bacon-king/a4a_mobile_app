@@ -20,6 +20,9 @@ class AppStateProvider extends ChangeNotifier {
       case 'forum':
         _currentScreen = 'splash';
         break;
+      case 'faq':
+        _currentScreen = 'account';
+        break;
       case 'edit_profile':
       case 'change_password':
         _currentScreen = 'account';

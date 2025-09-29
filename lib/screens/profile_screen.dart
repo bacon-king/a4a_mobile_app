@@ -212,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: 'FAQ',
           subtitle: 'Frequently Asked Questions',
           onTap: () {
-            // Handle FAQ
+            widget.onNavigate?.call('faq');
           },
         ),
       ],
@@ -276,56 +276,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildNotificationItem() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.notifications_outlined,
-            color: Colors.black,
-            size: 24,
-          ),
-          
-          const SizedBox(width: 19),
-          
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Notifications',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Customize notification preferences',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () => widget.onNavigate?.call('change_notifications'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.notifications_outlined,
+              color: Colors.black,
+              size: 24,
             ),
-          ),
-          
-          // Switch
-          Switch(
-            value: notificationsEnabled,
-            onChanged: (value) {
-              setState(() {
-                notificationsEnabled = value;
-              });
-            },
-            activeColor: Colors.black,
-            inactiveThumbColor: Colors.grey[300],
-            inactiveTrackColor: Colors.grey[400],
-          ),
-        ],
+            const SizedBox(width: 19),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notifications',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Customize notification preferences',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.black,
+              size: 24,
+            ),
+          ],
+        ),
       ),
     );
   }

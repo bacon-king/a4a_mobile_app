@@ -9,6 +9,8 @@ import 'forums_screen.dart';
 import 'profile_screen.dart';
 import 'edit_profile_screen.dart';
 import 'change_password_screen.dart';
+import 'change_notifications_screen.dart';
+import 'faq_screen.dart';
 
 class AppScreen extends StatelessWidget {
   const AppScreen({super.key});
@@ -48,6 +50,14 @@ class AppScreen extends StatelessWidget {
           case 'change_password':
             return ChangePasswordScreen(
               onNavigate: (section) => appState.navigateToScreen(section),
+            );
+          case 'change_notifications':
+            return ChangeNotificationsScreen(
+              onNavigate: (section) => appState.navigateToScreen(section),
+            );
+          case 'faq':
+            return FaqScreen(
+              onBack: () => appState.navigateToScreen('account'),
             );
           default:
             return SplashScreen(
