@@ -82,7 +82,7 @@ class ForumsScreen extends StatelessWidget {
             // Bottom Navigation
             Positioned(
               left: 0,
-              top: 804,
+              bottom: 0,
               child: CustomBottomNavigationBar(
                 currentIndex: 3,
                 onNavigate: onNavigate,

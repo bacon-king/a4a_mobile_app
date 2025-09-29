@@ -6,6 +6,9 @@ import 'register_screen.dart';
 import 'login_screen.dart';
 import 'home_feed_screen.dart';
 import 'forums_screen.dart';
+import 'profile_screen.dart';
+import 'edit_profile_screen.dart';
+import 'change_password_screen.dart';
 
 class AppScreen extends StatelessWidget {
   const AppScreen({super.key});
@@ -32,6 +35,18 @@ class AppScreen extends StatelessWidget {
             );
           case 'forum':
             return ForumsScreen(
+              onNavigate: (section) => appState.navigateToScreen(section),
+            );
+          case 'account':
+            return ProfileScreen(
+              onNavigate: (section) => appState.navigateToScreen(section),
+            );
+          case 'edit_profile':
+            return EditProfileScreen(
+              onNavigate: (section) => appState.navigateToScreen(section),
+            );
+          case 'change_password':
+            return ChangePasswordScreen(
               onNavigate: (section) => appState.navigateToScreen(section),
             );
           default:

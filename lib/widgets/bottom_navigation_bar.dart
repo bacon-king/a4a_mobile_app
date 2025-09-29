@@ -12,8 +12,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final navBarWidth = screenWidth;
+    
+    // Calculate positions based on screen width
+    final itemWidth = (navBarWidth - 40) / 4; // 4 items with 20px padding on each side
+    final itemSpacing = (navBarWidth - 4 * 36 - 40) / 3; // Space between 36px icons
+    
     return Container(
-      width: 412,
+      width: navBarWidth,
       height: 76,
       decoration: const BoxDecoration(color: Colors.white),
       child: Stack(
@@ -21,10 +28,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
           // Active indicator
           if (currentIndex == 0)
             Positioned(
-              left: 19,
+              left: 20 + (itemSpacing + 36) * 0 - 12, // Center on icon (60/2 - 36/2 = 12)
               top: 14,
               child: Container(
-                width: 80,
+                width: 60,
                 height: 47,
                 decoration: BoxDecoration(
                   color: Colors.black,
@@ -34,10 +41,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
             )
           else if (currentIndex == 1)
             Positioned(
-              left: 118,
+              left: 20 + (itemSpacing + 36) * 1 - 12, // Center on icon
               top: 14,
               child: Container(
-                width: 80,
+                width: 60,
                 height: 47,
                 decoration: BoxDecoration(
                   color: Colors.black,
@@ -47,10 +54,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
             )
           else if (currentIndex == 2)
             Positioned(
-              left: 239,
+              left: 20 + (itemSpacing + 36) * 3 - 12, // Center on account icon (last position)
               top: 14,
               child: Container(
-                width: 80,
+                width: 60,
                 height: 47,
                 decoration: BoxDecoration(
                   color: Colors.black,
@@ -60,10 +67,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
             )
           else if (currentIndex == 3)
             Positioned(
-              left: 140,
+              left: 20 + (itemSpacing + 36) * 1 - 12, // Center on forum icon (second position)
               top: 14,
               child: Container(
-                width: 80,
+                width: 60,
                 height: 47,
                 decoration: BoxDecoration(
                   color: Colors.black,
@@ -74,7 +81,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
           // Navigation items
           Positioned(
-            left: 41,
+            left: 20 + (itemSpacing + 36) * 0,
             top: 20,
             child: GestureDetector(
               onTap: () => onNavigate?.call('home'),
@@ -91,7 +98,24 @@ class CustomBottomNavigationBar extends StatelessWidget {
           ),
 
           Positioned(
-            left: 140,
+            left: 20 + (itemSpacing + 36) * 1,
+            top: 20,
+            child: GestureDetector(
+              onTap: () => onNavigate?.call('forum'),
+              child: SizedBox(
+                width: 36,
+                height: 36,
+                child: Icon(
+                  Icons.calendar_today,
+                  color: currentIndex == 1 ? Colors.white : Colors.black,
+                  size: 36,
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            left: 20 + (itemSpacing + 36) * 2,
             top: 20,
             child: GestureDetector(
               onTap: () => onNavigate?.call('forum'),
@@ -108,24 +132,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
           ),
 
           Positioned(
-            left: 239,
-            top: 20,
-            child: GestureDetector(
-              onTap: () => onNavigate?.call('calendar'),
-              child: SizedBox(
-                width: 37,
-                height: 36,
-                child: Icon(
-                  Icons.calendar_today,
-                  color: currentIndex == 1 ? Colors.white : Colors.black,
-                  size: 36,
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            left: 339,
+            left: 20 + (itemSpacing + 36) * 3,
             top: 20,
             child: GestureDetector(
               onTap: () => onNavigate?.call('account'),

@@ -72,7 +72,7 @@ class HomeFeedScreen extends StatelessWidget {
             // Bottom Navigation
             Positioned(
               left: 0,
-              top: 804,
+              bottom: 0,
               child: CustomBottomNavigationBar(
                 currentIndex: 0,
                 onNavigate: onNavigate,
