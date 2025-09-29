@@ -40,6 +40,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final safeAreaTop = MediaQuery.of(context).padding.top;
     final safeAreaBottom = MediaQuery.of(context).padding.bottom;
     final navBarHeight = 76.0;
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
+    final keyboardOpen = keyboardInset > 0;
+    final effectiveNavBarHeight = keyboardOpen ? 0.0 : navBarHeight;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -52,7 +55,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               top: 155,
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: screenHeight - 155 - navBarHeight - safeAreaBottom,
+                height: screenHeight - 155 - effectiveNavBarHeight - safeAreaBottom,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -61,7 +64,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(28.0, 28.0, 28.0, 40.0),
+                  padding: EdgeInsets.fromLTRB(
+                    28.0,
+                    28.0,
+                    28.0,
+                    70.0 + keyboardInset + 74.0,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -137,22 +145,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
 
             // Save Button
-            Positioned(
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 160),
+              curve: Curves.easeOut,
               left: 29,
               right: 29,
-              bottom: 90, // Position above the bottom navigation bar
+              bottom: keyboardOpen ? 24 + safeAreaBottom : 90,
               child: _buildSaveButton(),
             ),
 
             // Bottom Navigation
-            Positioned(
-              left: 0,
-              bottom: 0,
-              child: CustomBottomNavigationBar(
-                currentIndex: 2,
-                onNavigate: widget.onNavigate,
+            if (!keyboardOpen)
+              Positioned(
+                left: 0,
+                bottom: 0,
+                child: CustomBottomNavigationBar(
+                  currentIndex: 2,
+                  onNavigate: widget.onNavigate,
+                ),
               ),
-            ),
           ],
         ),
       ),
