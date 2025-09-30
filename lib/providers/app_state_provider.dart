@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppStateProvider extends ChangeNotifier {
-  String _currentScreen = 'account';
+  String _currentScreen = 'splash';
 
   String get currentScreen => _currentScreen;
 
