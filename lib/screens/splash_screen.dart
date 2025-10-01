@@ -39,36 +39,26 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
 
-            // Hello text
-            Positioned(
-              left: 166,
-              top: 511,
-              child: Text(
-                'Hello.',
-                style: Theme.of(
-                  context,
-                ).textTheme.displayLarge?.copyWith(color: Colors.black),
-              ),
-            ),
-
             // Welcome text
-            Positioned(
-              left: 206,
-              top: 563,
+            Align(
+              alignment: Alignment(0, 0.45), // Adjust vertical position as needed
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
+                    'Hello.',
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.black),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
                     'Welcome to A4A, your companion in',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(color: Colors.black),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
                   ),
                   Text(
-                    'you journey to good health.',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(color: Colors.black),
+                    'your journey to good health.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
                   ),
                 ],
               ),

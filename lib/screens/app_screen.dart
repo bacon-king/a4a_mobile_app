@@ -1,16 +1,13 @@
+import 'package:application_prototype/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state_provider.dart';
 import 'splash_screen.dart';
 import 'register_screen.dart';
-import 'login_screen.dart';
+import 'login_screen.dart' hide RegisterScreen;
 import 'home_feed_screen.dart';
 import 'forums_screen.dart';
-import 'profile_screen.dart';
-import 'edit_profile_screen.dart';
-import 'change_password_screen.dart';
-import 'change_notifications_screen.dart';
-import 'faq_screen.dart';
+import 'news_screen.dart'; // Added import
 
 class AppScreen extends StatelessWidget {
   const AppScreen({super.key});
@@ -39,25 +36,13 @@ class AppScreen extends StatelessWidget {
             return ForumsScreen(
               onNavigate: (section) => appState.navigateToScreen(section),
             );
-          case 'account':
+          case 'feed':
+            return HIVRecommendationsScreen(
+              onNavigate: (section) => appState.navigateToScreen(section),
+            );
+          case 'profile': // <-- Add this case
             return ProfileScreen(
               onNavigate: (section) => appState.navigateToScreen(section),
-            );
-          case 'edit_profile':
-            return EditProfileScreen(
-              onNavigate: (section) => appState.navigateToScreen(section),
-            );
-          case 'change_password':
-            return ChangePasswordScreen(
-              onNavigate: (section) => appState.navigateToScreen(section),
-            );
-          case 'change_notifications':
-            return ChangeNotificationsScreen(
-              onNavigate: (section) => appState.navigateToScreen(section),
-            );
-          case 'faq':
-            return FaqScreen(
-              onBack: () => appState.navigateToScreen('account'),
             );
           default:
             return SplashScreen(

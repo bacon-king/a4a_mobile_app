@@ -1,6 +1,9 @@
+import 'package:application_prototype/providers/app_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -30,16 +33,30 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      // Mock login success
-      Fluttertoast.showToast(
-        msg: 'Login successful!',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-      );
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    final response = await Supabase.instance.client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+
+    if (response.user != null) {
+      // Refresh user to get latest metadata
+      await Supabase.instance.client.auth.refreshSession();
+      // Optionally, fetch user again
+      // final user = await Supabase.instance.client.auth.getUser();
+
+      Provider.of<AppStateProvider>(context, listen: false).setLoggedInEmail(email);
+
+      Fluttertoast.showToast(msg: 'Login successful!');
       widget.onLoginSuccess?.call();
+    } else {
+      Fluttertoast.showToast(msg: 'Login failed!');
     }
+  }
   }
 
   @override

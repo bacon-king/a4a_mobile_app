@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state_provider.dart';
 import '../widgets/bottom_navigation_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Function(String)? onNavigate;
@@ -16,7 +17,38 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool notificationsEnabled = true;
+  String? username;
+  String? email;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserInfo();
+  }
+
+  Future<void> _fetchUserInfo() async {
+  final supabase = Supabase.instance.client;
+  final user = supabase.auth.currentUser;
+  if (user != null) {
+    // ...fetch logic...
+    if (mounted) {
+      setState(() {
+        email = user.email ?? 'Unknown';
+        username = user.userMetadata?['username'] ?? 'Unknown';
+        isLoading = false;
+      });
+    }
+  } else {
+    if (mounted) {
+      setState(() {
+        email = 'Unknown';
+        username = 'Unknown';
+        isLoading = false;
+      });
+    }
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -24,94 +56,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final safeAreaTop = MediaQuery.of(context).padding.top;
     final safeAreaBottom = MediaQuery.of(context).padding.bottom;
     final navBarHeight = 76.0;
-    
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Background white container
-            Positioned(
-              left: 0,
-              top: 155,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: screenHeight - 155 - navBarHeight - safeAreaBottom,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(45),
-                    topRight: Radius.circular(45),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Stack(
+                children: [
+                  // Background white container
+                  Positioned(
+                    left: 0,
+                    top: 155,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: screenHeight - 155 - navBarHeight - safeAreaBottom,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(45),
+                          topRight: Radius.circular(45),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(28.0, 28.0, 28.0, 40.0), // Reduced bottom padding
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
+                            
+                            // Profile Card
+                            _buildProfileCard(),
+                            
+                            const SizedBox(height: 32),
+                            
+                            // General Settings Section
+                            _buildGeneralSettingsSection(),
+                            
+                            const SizedBox(height: 32),
+                            
+                            // Preferences Section
+                            _buildPreferencesSection(),
+                            
+                            const SizedBox(height: 32),
+                            
+                            // Logout Button
+                            _buildLogoutButton(),
+                            
+                            const SizedBox(height: 32),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(28.0, 28.0, 28.0, 40.0), // Reduced bottom padding
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      
-                      // Profile Card
-                      _buildProfileCard(),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // General Settings Section
-                      _buildGeneralSettingsSection(),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Preferences Section
-                      _buildPreferencesSection(),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Logout Button
-                      _buildLogoutButton(),
-                      
-                      const SizedBox(height: 32),
-                    ],
+                  // Title
+                  Positioned(
+                    left: 28,
+                    top: 108,
+                    child: Text(
+                      'My Profile',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.displayLarge?.copyWith(color: Colors.white),
+                    ),
                   ),
-                ),
-              ),
-            ),
-            // Title
-            Positioned(
-              left: 28,
-              top: 108,
-              child: Text(
-                'My Profile',
-                style: Theme.of(
-                  context,
-                ).textTheme.displayLarge?.copyWith(color: Colors.white),
-              ),
-            ),
 
-            // Bottom Navigation
-            Positioned(
-              left: 0,
-              bottom: 0, 
-              child: CustomBottomNavigationBar(
-                currentIndex: 2,
-                onNavigate: widget.onNavigate,
+                  // Bottom Navigation
+                  Positioned(
+                    left: 0,
+                    bottom: 0, 
+                    child: CustomBottomNavigationBar(
+                      currentIndex: 2,
+                      onNavigate: widget.onNavigate,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
   Widget _buildProfileCard() {
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
+
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 1),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.black, width: 1),
       ),
       child: Row(
         children: [
-          // Profile Avatar
           Container(
             width: 80,
             height: 80,
@@ -125,28 +163,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.black,
             ),
           ),
-          
           const SizedBox(width: 18),
-          
-          // Profile Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'blue_hedgehog_2025',
-                  style: TextStyle(
+                Text(
+                  username ?? 'Unknown User',
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 3),
-                const Text(
-                  'john_smith@gmail.com',
-                  style: TextStyle(
+                Text(
+                  email ?? 'Unknown Email',
+                  style: const TextStyle(
                     color: Colors.black,
-                    fontSize: 16,
+                    fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -280,15 +315,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onTap: () => widget.onNavigate?.call('change_notifications'),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
+        child: const Row(
           children: [
-            const Icon(
+            Icon(
               Icons.notifications_outlined,
               color: Colors.black,
               size: 24,
             ),
-            const SizedBox(width: 19),
-            const Expanded(
+            SizedBox(width: 19),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -312,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
               color: Colors.black,
               size: 24,
