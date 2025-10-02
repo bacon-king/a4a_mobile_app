@@ -26,11 +26,17 @@ class SplashScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: screenHeight * 0.1),
-              SizedBox(
+              Image.asset(
+                'lib/assets/images/splash.png',
+                width: imageSize,
+                height: imageSize,
+                fit: BoxFit.cover,
+              ),
+              /* SizedBox(
                 width: imageSize,
                 height: imageSize,
                 child: const Center(child: Text('Splash Art')),
-              ),
+              ), */
               SizedBox(height: screenHeight * 0.05),
               Text(
                 'Hello.',
