@@ -135,7 +135,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
             left: 20 + (itemSpacing + 36) * 3,
             top: 20,
             child: GestureDetector(
-              onTap: () => onNavigate?.call('profile'), // Changed from 'account' to 'profile'
+              onTap: () => onNavigate?.call('profile'),
               child: SizedBox(
                 width: 36,
                 height: 36,

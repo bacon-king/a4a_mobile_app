@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/app_state_provider.dart';
 import '../widgets/bottom_navigation_bar.dart';
 
 class ChangePasswordScreen extends StatefulWidget {

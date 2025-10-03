@@ -35,28 +35,42 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
 
-    final response = await Supabase.instance.client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
 
-    if (response.user != null) {
-      // Refresh user to get latest metadata
-      await Supabase.instance.client.auth.refreshSession();
-      // Optionally, fetch user again
-      // final user = await Supabase.instance.client.auth.getUser();
+      try {
+        final response = await Supabase.instance.client.auth.signInWithPassword(
+          email: email,
+          password: password,
+        );
 
-      Provider.of<AppStateProvider>(context, listen: false).setLoggedInEmail(email);
+        Navigator.of(context).pop(); // Remove loading indicator
 
-      Fluttertoast.showToast(msg: 'Login successful!');
-      widget.onLoginSuccess?.call();
-    } else {
-      Fluttertoast.showToast(msg: 'Login failed!');
+        if (response.user != null) {
+          // Refresh user to get latest metadata
+          await Supabase.instance.client.auth.refreshSession();
+
+          Provider.of<AppStateProvider>(context, listen: false).setLoggedInEmail(email);
+
+          Fluttertoast.showToast(msg: 'Login successful!');
+          widget.onLoginSuccess?.call();
+        } else {
+          Fluttertoast.showToast(msg: 'Invalid email or password!');
+        }
+      } on AuthException catch (e) {
+        Navigator.of(context).pop(); // Remove loading indicator
+        Fluttertoast.showToast(msg: e.message);
+      } catch (e) {
+        Navigator.of(context).pop(); // Remove loading indicator
+        Fluttertoast.showToast(msg: 'An unexpected error occurred.');
+      }
     }
-  }
   }
 
   @override

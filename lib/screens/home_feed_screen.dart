@@ -38,12 +38,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll); // <-- Add this line
     _scrollController.dispose();
     super.dispose();
   }
 
   // Fetch initial set of articles with randomization for freshness
   Future<void> _fetchInitialArticles() async {
+    if (!mounted) return;
     setState(() {
       _isInitialLoading = true;
       _articles.clear();
@@ -55,7 +57,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       final selectedQuery = _searchQueries[random.nextInt(_searchQueries.length)];
       final results = await _searchGoogle(selectedQuery['query']!, int.parse(selectedQuery['num_results']!));
       final newArticles = _parseSearchResults(results);
-      
+
+      if (!mounted) return;
       setState(() {
         _articles.addAll(
           newArticles.map((e) => e.map((k, v) => MapEntry(k, v.toString())))
@@ -64,12 +67,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       });
     } catch (e) {
       debugPrint('Error fetching initial articles: $e');
-      setState(() {
-        _isInitialLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load recommendations: $e')),
-      );
+      if (mounted) {
+        setState(() {
+          _isInitialLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load recommendations: $e')),
+        );
+      }
     }
   }
 
@@ -77,6 +82,7 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Future<void> _loadMoreArticles() async {
     if (_isLoading) return;
 
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
     });
@@ -86,7 +92,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       final selectedQuery = _searchQueries[random.nextInt(_searchQueries.length)];
       final results = await _searchGoogle(selectedQuery['query']!, _pageSize);
       final newArticles = _parseSearchResults(results);
-      
+
+      if (!mounted) return;
       if (newArticles.isNotEmpty) {
         setState(() {
           _articles.addAll(
@@ -101,12 +108,14 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
       }
     } catch (e) {
       debugPrint('Error loading more articles: $e');
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load more articles: $e')),
-      );
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load more articles: $e')),
+        );
+      }
     }
   }
 
@@ -152,9 +161,11 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open the article.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open the article.')),
+        );
+      }
     }
   }
 

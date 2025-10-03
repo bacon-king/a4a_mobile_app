@@ -30,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _fetchUserInfo() async {
   final supabase = Supabase.instance.client;
   final user = supabase.auth.currentUser;
+  final profileImageUrl = user?.userMetadata?['profile_image_url'];
   if (user != null) {
     // ...fetch logic...
     if (mounted) {
@@ -67,10 +68,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Background white container
                   Positioned(
                     left: 0,
+                    right: 0,
                     top: 155,
+                    bottom: navBarHeight + safeAreaBottom,
                     child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: screenHeight - 155 - navBarHeight - safeAreaBottom,
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
@@ -84,25 +85,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 20),
-                            
-                            // Profile Card
-                            _buildProfileCard(),
-                            
+                            _buildProfileCard(), // Profile Card
                             const SizedBox(height: 32),
-                            
-                            // General Settings Section
-                            _buildGeneralSettingsSection(),
-                            
+                            _buildGeneralSettingsSection(), // General Settings Section
                             const SizedBox(height: 32),
-                            
-                            // Preferences Section
-                            _buildPreferencesSection(),
-                            
+                            _buildPreferencesSection(), // Preferences Section
                             const SizedBox(height: 32),
-                            
-                            // Logout Button
-                            _buildLogoutButton(),
-                            
+                            _buildLogoutButton(), // Logout Button
                             const SizedBox(height: 32),
                           ],
                         ),
@@ -137,9 +126,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileCard() {
-    final supabase = Supabase.instance.client;
-    final user = supabase.auth.currentUser;
-
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12),
       padding: const EdgeInsets.all(20),

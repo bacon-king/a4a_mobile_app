@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/app_state_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/bottom_navigation_bar.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class EditProfileScreen extends StatefulWidget {
   final Function(String)? onNavigate;
@@ -19,12 +21,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
+  File? _profileImageFile;
+  String? _profileImageUrl;
+  bool _isUploadingImage = false;
+
   @override
   void initState() {
     super.initState();
-    // Initialize with current user data
-    _usernameController.text = 'blue_hedgehog_2025';
-    _emailController.text = 'john_smith@gmail.com';
+    final user = Supabase.instance.client.auth.currentUser;
+    _usernameController.text = user?.userMetadata?['username'] ?? '';
+    _emailController.text = user?.email ?? '';
+    _profileImageUrl = user?.userMetadata?['profile_image_url'];
   }
 
   @override
@@ -39,7 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     final safeAreaTop = MediaQuery.of(context).padding.top;
     final safeAreaBottom = MediaQuery.of(context).padding.bottom;
-    final navBarHeight = 76.0;
+    const navBarHeight = 76.0;
     final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
     final keyboardOpen = keyboardInset > 0;
     final effectiveNavBarHeight = keyboardOpen ? 0.0 : navBarHeight;
@@ -74,20 +81,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-
-                      // Profile Picture Section
-                      _buildProfilePictureSection(),
-
+                      _buildProfilePictureSection(), // Profile Picture Section
                       const SizedBox(height: 32),
-
-                      // Username Field
-                      _buildUsernameField(),
-
-                      const SizedBox(height: 25),
-
-                      // Email Field
-                      _buildEmailField(),
-
+                      _buildUsernameField(), // Username Field
+                      const SizedBox(height: 25), 
+                      _buildEmailField(), // Email Field
                       const SizedBox(height: 32),
                     ],
                   ),
@@ -100,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               left: 18,
               top: 58,
               child: GestureDetector(
-                onTap: () => widget.onNavigate?.call('account'),
+                onTap: () => widget.onNavigate?.call('profile'),
                 child: Row(
                   children: [
                     Container(
@@ -183,13 +181,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               color: Colors.white,
               border: Border.all(color: Colors.black, width: 1),
             ),
-            child: const Icon(
-              Icons.person,
-              size: 80,
-              color: Colors.black,
+            child: ClipOval(
+              child: _isUploadingImage
+                  ? const Center(child: CircularProgressIndicator())
+                  : _profileImageFile != null
+                      ? Image.file(_profileImageFile!, fit: BoxFit.cover)
+                      : (_profileImageUrl != null && _profileImageUrl!.isNotEmpty)
+                          ? Image.network(_profileImageUrl!, fit: BoxFit.cover)
+                          : const Icon(Icons.person, size: 80, color: Colors.black),
             ),
           ),
-
           // Edit Button
           Positioned(
             right: 0,
@@ -199,7 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Container(
                 width: 51,
                 height: 51,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.black,
                   shape: BoxShape.circle,
                 ),
@@ -388,17 +389,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   _buildImagePickerOption(
                     icon: Icons.camera_alt,
                     label: 'Camera',
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pop(context);
-                      // TODO: Implement camera functionality
+                      await _pickAndUploadImage(ImageSource.camera);
                     },
                   ),
                   _buildImagePickerOption(
                     icon: Icons.photo_library,
                     label: 'Gallery',
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pop(context);
-                      // TODO: Implement gallery functionality
+                      await _pickAndUploadImage(ImageSource.gallery);
                     },
                   ),
                 ],
@@ -409,6 +410,64 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
       },
     );
+  }
+
+  Future<void> _pickAndUploadImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source, imageQuality: 80);
+
+    if (pickedFile == null) return;
+
+    setState(() {
+      _isUploadingImage = true;
+    });
+
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) throw Exception('No user logged in');
+
+      final file = File(pickedFile.path);
+      final fileExt = path.extension(file.path);
+      final fileName = 'profile_${user.id}${DateTime.now().millisecondsSinceEpoch}$fileExt';
+      final storagePath = 'profile_pictures/$fileName';
+
+      // Upload to Supabase Storage (bucket: 'avatars' or your bucket name)
+      final storageResponse = await Supabase.instance.client.storage
+          .from('avatars')
+          .upload(storagePath, file, fileOptions: const FileOptions(upsert: true));
+
+      if (storageResponse.isEmpty) {
+        throw Exception('Failed to upload image');
+      }
+
+      // Get public URL
+      final publicUrl = Supabase.instance.client.storage
+          .from('avatars')
+          .getPublicUrl(storagePath);
+
+      // Update user metadata
+      final updateRes = await Supabase.instance.client.auth.updateUser(
+        UserAttributes(data: {'profile_image_url': publicUrl}),
+      );
+      if (updateRes.user == null) throw Exception('Failed to update user metadata');
+
+      setState(() {
+        _profileImageFile = file;
+        _profileImageUrl = publicUrl;
+        _isUploadingImage = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile picture updated!'), backgroundColor: Colors.green),
+      );
+    } catch (e) {
+      setState(() {
+        _isUploadingImage = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   Widget _buildImagePickerOption({
@@ -446,17 +505,72 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _saveProfile() {
-    // TODO: Implement save functionality
-    // For now, just show a success message and navigate back
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Profile updated successfully!'),
-        backgroundColor: Colors.green,
-      ),
+  void _saveProfile() async {
+    final supabase = Supabase.instance.client;
+    final newEmail = _emailController.text.trim();
+    final newUsername = _usernameController.text.trim();
+
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    // Navigate back to profile screen
-    widget.onNavigate?.call('account');
+    try {
+      final user = supabase.auth.currentUser;
+      if (user == null) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No user is currently logged in.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Update email if changed
+      if (newEmail != user.email) {
+        final emailRes = await supabase.auth.updateUser(
+          UserAttributes(email: newEmail),
+        );
+        if (emailRes.user == null) {
+          throw Exception('Failed to update email.');
+        }
+      }
+
+      // Update username in user_metadata if changed
+      if (newUsername != (user.userMetadata?['username'] ?? '')) {
+        final metaRes = await supabase.auth.updateUser(
+          UserAttributes(data: {'username': newUsername}),
+        );
+        if (metaRes.user == null) {
+          throw Exception('Failed to update username.');
+        }
+      }
+
+      Navigator.of(context).pop(); // Remove loading indicator
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile updated successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Optionally refresh session/user info here
+
+      // Navigate back to profile screen
+      widget.onNavigate?.call('profile');
+    } catch (e) {
+      Navigator.of(context).pop(); // Remove loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

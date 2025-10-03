@@ -1,13 +1,14 @@
+import 'package:application_prototype/screens/edit_profile_screen.dart';
 import 'package:application_prototype/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state_provider.dart';
 import 'splash_screen.dart';
 import 'register_screen.dart';
-import 'login_screen.dart' hide RegisterScreen;
+import 'login_screen.dart';
 import 'home_feed_screen.dart';
 import 'forums_screen.dart';
-import 'news_screen.dart'; // Added import
+import 'news_screen.dart';
 
 class AppScreen extends StatelessWidget {
   const AppScreen({super.key});
@@ -40,8 +41,12 @@ class AppScreen extends StatelessWidget {
             return HIVRecommendationsScreen(
               onNavigate: (section) => appState.navigateToScreen(section),
             );
-          case 'profile': // <-- Add this case
+          case 'profile':
             return ProfileScreen(
+              onNavigate: (section) => appState.navigateToScreen(section),
+            );
+          case 'edit_profile':
+            return EditProfileScreen(
               onNavigate: (section) => appState.navigateToScreen(section),
             );
           default:
