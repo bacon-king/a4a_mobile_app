@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/bottom_navigation_bar.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
+=======
+import 'package:provider/provider.dart';
+import '../providers/app_state_provider.dart';
+>>>>>>> 0fdd0ad9a038a4b24a22527ade98b9e8976c8724
 
 class EditProfileScreen extends StatefulWidget {
   final Function(String)? onNavigate;
 
-  const EditProfileScreen({
-    super.key,
-    this.onNavigate,
-  });
+  const EditProfileScreen({super.key, this.onNavigate});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -62,7 +64,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               top: 155,
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: screenHeight - 155 - effectiveNavBarHeight - safeAreaBottom,
+                height:
+                    screenHeight - 155 - effectiveNavBarHeight - safeAreaBottom,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -135,10 +138,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Text(
                 'Edit Profile',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
 
@@ -151,17 +154,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               bottom: keyboardOpen ? 24 + safeAreaBottom : 90,
               child: _buildSaveButton(),
             ),
-
-            // Bottom Navigation
-            if (!keyboardOpen)
-              Positioned(
-                left: 0,
-                bottom: 0,
-                child: CustomBottomNavigationBar(
-                  currentIndex: 2,
-                  onNavigate: widget.onNavigate,
-                ),
-              ),
           ],
         ),
       ),
@@ -181,6 +173,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               color: Colors.white,
               border: Border.all(color: Colors.black, width: 1),
             ),
+<<<<<<< HEAD
             child: ClipOval(
               child: _isUploadingImage
                   ? const Center(child: CircularProgressIndicator())
@@ -190,6 +183,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ? Image.network(_profileImageUrl!, fit: BoxFit.cover)
                           : const Icon(Icons.person, size: 80, color: Colors.black),
             ),
+=======
+            child: const Icon(Icons.person, size: 80, color: Colors.black),
+>>>>>>> 0fdd0ad9a038a4b24a22527ade98b9e8976c8724
           ),
           // Edit Button
           Positioned(
@@ -204,11 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   color: Colors.black,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.edit,
-                  color: Colors.white,
-                  size: 24,
-                ),
+                child: const Icon(Icons.edit, color: Colors.white, size: 24),
               ),
             ),
           ),
@@ -243,10 +235,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Expanded(
                 child: TextField(
                   controller: _usernameController,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
                   decoration: const InputDecoration(
                     hintText: 'Enter your username',
                     hintStyle: TextStyle(
@@ -264,11 +253,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Icon(
-                Icons.edit,
-                color: Color(0xFF909090),
-                size: 24,
-              ),
+              const Icon(Icons.edit, color: Color(0xFF909090), size: 24),
               const SizedBox(width: 12),
             ],
           ),
@@ -304,10 +289,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
                   decoration: const InputDecoration(
                     hintText: 'Enter your email address',
                     hintStyle: TextStyle(
@@ -325,11 +307,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Icon(
-                Icons.edit,
-                color: Color(0xFF909090),
-                size: 24,
-              ),
+              const Icon(Icons.edit, color: Color(0xFF909090), size: 24),
               const SizedBox(width: 12),
             ],
           ),
@@ -377,10 +355,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               const Text(
                 'Change Profile Picture',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               Row(
@@ -486,19 +461,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(30),
             ),
-            child: Icon(
-              icon,
-              size: 30,
-              color: Colors.black,
-            ),
+            child: Icon(icon, size: 30, color: Colors.black),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ],
       ),

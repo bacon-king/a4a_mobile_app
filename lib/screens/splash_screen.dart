@@ -8,90 +8,96 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+
+    final imageSize = screenWidth * 0.7;
+    final horizontalPadding = screenWidth * 0.1;
+    final buttonWidth = screenWidth - (horizontalPadding * 2);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Background image placeholder
-            Positioned(
-              left: 59,
-              top: 131,
-              child: Container(
-                width: 294,
-                height: 294,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Splash Art',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 18,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black,
-                      letterSpacing: 0.027,
-                    ),
-                  ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: screenHeight * 0.1),
+              Image.asset(
+                'lib/assets/images/splash.png',
+                width: imageSize,
+                height: imageSize,
+                fit: BoxFit.cover,
+              ),
+              /* SizedBox(
+                width: imageSize,
+                height: imageSize,
+                child: const Center(child: Text('Splash Art')),
+              ), */
+              SizedBox(height: screenHeight * 0.05),
+              Text(
+                'Hello.',
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-
-            // Welcome text
-            Align(
-              alignment: Alignment(0, 0.45), // Adjust vertical position as needed
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+              SizedBox(height: screenHeight * 0.02),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Hello.',
-                    style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.black),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Welcome to A4A, your companion in',
+                    'Welcome to A4A, your companion in your journey to good health.',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
-                  ),
-                  Text(
-                    'your journey to good health.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ],
               ),
-            ),
-
-            // Login button
-            Positioned(
-              left: 45,
-              top: 667,
-              child: SizedBox(
-                width: 321,
+              SizedBox(height: screenHeight * 0.08),
+              SizedBox(
+                width: buttonWidth,
                 height: 50,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shadowColor: Theme.of(context).colorScheme.shadow,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   onPressed: onLogin,
                   child: const Text('LOG IN'),
                 ),
               ),
-            ),
-
-            // Register button
-            Positioned(
-              left: 45,
-              top: 737,
-              child: SizedBox(
-                width: 321,
+              SizedBox(height: screenHeight * 0.02),
+              SizedBox(
+                width: buttonWidth,
                 height: 50,
                 child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.primary,
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    backgroundColor: Colors.transparent, // usually transparent
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   onPressed: onRegister,
                   child: const Text('REGISTER'),
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: screenHeight * 0.05),
+            ],
+          ),
         ),
       ),
     );

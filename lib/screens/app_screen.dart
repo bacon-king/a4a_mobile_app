@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import 'package:application_prototype/screens/edit_profile_screen.dart';
 import 'package:application_prototype/screens/profile_screen.dart';
+=======
+import 'profile_screen.dart';
+>>>>>>> 0fdd0ad9a038a4b24a22527ade98b9e8976c8724
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state_provider.dart';

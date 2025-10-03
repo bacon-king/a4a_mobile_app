@@ -1,43 +1,35 @@
 import 'package:flutter/material.dart';
 
-class AppStateProvider with ChangeNotifier {
-  String _currentScreen = 'splash'; // Default screen
-  final List<String> _screenHistory = []; // Track navigation history
-  
-  String? _loggedInEmail;
-  String? get loggedInEmail => _loggedInEmail;
+class AppStateProvider extends ChangeNotifier {
+  String _currentScreen = 'splash';
+
   String get currentScreen => _currentScreen;
 
-  void setLoggedInEmail(String email) {
-    _loggedInEmail = email;
+  void navigateToScreen(String screen) {
+    _currentScreen = screen;
     notifyListeners();
   }
-  
-  // Navigate to a new screen and update history
-  void navigateToScreen(String screen) {
-    if (_currentScreen != screen) {
-      _screenHistory.add(_currentScreen);
-      _currentScreen = screen;
-      notifyListeners();
-    }
-  }
 
-  // Go back to the previous screen
   void goBack() {
-    if (_screenHistory.isNotEmpty) {
-      _currentScreen = _screenHistory.removeLast();
-      notifyListeners();
-    } else {
-      // Fallback to splash if no history
-      _currentScreen = 'splash';
-      notifyListeners();
+    switch (_currentScreen) {
+      case 'register':
+      case 'login':
+        _currentScreen = 'splash';
+        break;
+      case 'home':
+      case 'forum':
+        _currentScreen = 'splash';
+        break;
+      case 'faq':
+        _currentScreen = 'account';
+        break;
+      case 'edit_profile':
+      case 'change_password':
+        _currentScreen = 'account';
+        break;
+      default:
+        _currentScreen = 'splash';
     }
-  }
-
-  // Clear history and reset to a specific screen (e.g., logout)
-  void resetToScreen(String screen) {
-    _screenHistory.clear();
-    _currentScreen = screen;
     notifyListeners();
   }
 }

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import '../widgets/bottom_navigation_bar.dart';
+=======
+import 'package:provider/provider.dart';
+import '../providers/app_state_provider.dart';
+>>>>>>> 0fdd0ad9a038a4b24a22527ade98b9e8976c8724
 
 class ChangePasswordScreen extends StatefulWidget {
   final Function(String)? onNavigate;
 
-  const ChangePasswordScreen({
-    super.key,
-    this.onNavigate,
-  });
+  const ChangePasswordScreen({super.key, this.onNavigate});
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -53,7 +55,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               top: 155,
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: screenHeight - 155 - effectiveNavBarHeight - safeAreaBottom,
+                height:
+                    screenHeight - 155 - effectiveNavBarHeight - safeAreaBottom,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -135,10 +138,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               child: Text(
                 'Change Password',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
 
@@ -151,17 +154,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               bottom: keyboardOpen ? 24 + safeAreaBottom : 90,
               child: _buildUpdatePasswordButton(),
             ),
-
-            // Bottom Navigation
-            if (!keyboardOpen)
-              Positioned(
-                left: 0,
-                bottom: 0,
-                child: CustomBottomNavigationBar(
-                  currentIndex: 2,
-                  onNavigate: widget.onNavigate,
-                ),
-              ),
           ],
         ),
       ),
@@ -194,10 +186,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 child: TextField(
                   controller: _currentPasswordController,
                   obscureText: _obscureCurrentPassword,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
                   decoration: const InputDecoration(
                     hintText: 'Enter current password',
                     hintStyle: TextStyle(
@@ -263,10 +252,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 child: TextField(
                   controller: _newPasswordController,
                   obscureText: _obscureNewPassword,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
                   decoration: const InputDecoration(
                     hintText: 'Enter new password',
                     hintStyle: TextStyle(
@@ -330,10 +316,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 child: TextField(
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
+                  style: const TextStyle(color: Colors.black, fontSize: 16),
                   decoration: const InputDecoration(
                     hintText: 'Confirm new password',
                     hintStyle: TextStyle(
@@ -438,10 +421,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/bottom_navigation_bar.dart';
 
 class ForumsScreen extends StatelessWidget {
   final Function(String)? onNavigate;
@@ -78,16 +77,6 @@ class ForumsScreen extends StatelessWidget {
                 ).textTheme.displayLarge?.copyWith(color: Colors.white),
               ),
             ),
-
-            // Bottom Navigation
-            Positioned(
-              left: 0,
-              bottom: 0,
-              child: CustomBottomNavigationBar(
-                currentIndex: 3,
-                onNavigate: onNavigate,
-              ),
-            ),
           ],
         ),
       ),
@@ -118,11 +107,7 @@ class ForumsScreen extends StatelessWidget {
                 const CircleAvatar(
                   radius: 12.5,
                   backgroundColor: Colors.black,
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 18,
-                  ),
+                  child: Icon(Icons.person, color: Colors.white, size: 18),
                 ),
                 const SizedBox(width: 8),
                 Text(

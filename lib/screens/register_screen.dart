@@ -61,18 +61,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final response = await supabase.auth.signUp(
           email: email,
           password: password,
-          data: {
-            'full_name': fullName,
-            'username': username,
-          },
+          data: {'full_name': fullName, 'username': username},
         );
 
         if (response.user != null) {
           Fluttertoast.showToast(
             msg: 'Registration successful! Please check your email to confirm.',
             toastLength: Toast.LENGTH_SHORT,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
           );
           widget.onBack?.call();
         } else {
@@ -80,25 +75,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       } on AuthException catch (e) {
         String errorMsg = e.message;
-        Fluttertoast.showToast(
-          msg: errorMsg,
-          toastLength: Toast.LENGTH_SHORT,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
+        Fluttertoast.showToast(msg: errorMsg, toastLength: Toast.LENGTH_SHORT);
         debugPrint('AuthException: $errorMsg');
       } catch (e) {
         String errorMsg = 'An error occurred: $e';
         if (e.toString().contains('SocketException') ||
             e.toString().contains('Failed host lookup')) {
-          errorMsg = 'Network error: Unable to connect to the server. Please check your internet connection.';
+          errorMsg =
+              'Network error: Unable to connect to the server. Please check your internet connection.';
         }
-        Fluttertoast.showToast(
-          msg: errorMsg,
-          toastLength: Toast.LENGTH_SHORT,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
+        Fluttertoast.showToast(msg: errorMsg, toastLength: Toast.LENGTH_SHORT);
         debugPrint('Error during registration: $e');
       } finally {
         setState(() {
@@ -111,221 +97,211 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: Theme.of(context).colorScheme.onSurface,
+              onPressed: widget.onBack,
+            );
+          },
+        ),
+      ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Background white container
-            Positioned(
-              left: 0,
-              top: 196,
-              child: Container(
-                width: 412,
-                height: 721,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(45),
-                    topRight: Radius.circular(45),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(28.0),
-                  child: Form(
-                    key: _formKey,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenWidth = constraints.maxWidth;
+            final screenHeight = constraints.maxHeight;
+
+            final horizontalPadding = screenWidth * 0.07; // 7% side padding
+            final contentRadius = screenWidth * 0.11; // rounded top corners
+            final sectionGap = screenHeight * 0.02; // vertical gaps
+            screenHeight * 0.18; // where white panel starts
+            final buttonHeight = 50.0; // keep comfortable touch target
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
-
-                        // Full Name field
-                        TextFormField(
-                          controller: _fullNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Full Name',
-                            hintText: 'John Smith',
-                          ),
-                          validator: RequiredValidator(
-                            errorText: 'Full name is required',
-                          ).call,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          '*Your name will not be disclosed to other users',
-                          style: TextStyle(
-                            fontFamily: 'Roboto',
-                            fontSize: 10,
-                            fontStyle: FontStyle.italic,
-                            color: Color(0xFF5A5A5A),
-                            letterSpacing: 0.15,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Username field
-                        TextFormField(
-                          controller: _usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Username',
-                            hintText: 'blue_hedgehog_2025',
-                          ),
-                          validator: RequiredValidator(
-                            errorText: 'Username is required',
-                          ).call,
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Email field
-                        TextFormField(
-                          controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email Address',
-                            hintText: 'john_smith@gmail.com',
-                          ),
-                          validator: MultiValidator([
-                            RequiredValidator(errorText: 'Email is required'),
-                            EmailValidator(errorText: 'Enter a valid email'),
-                          ]).call,
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Password field
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            hintText: '********',
-                          ),
-                          validator: RequiredValidator(
-                            errorText: 'Password is required',
-                          ).call,
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Confirm Password field
-                        TextFormField(
-                          controller: _confirmPasswordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Confirm Password',
-                            hintText: '********',
-                          ),
-                          validator: (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 40),
-
-                        // Register button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _handleRegister, // Disable button during loading
-                            child: _isLoading
-                                ? const CircularProgressIndicator()
-                                : const Text('REGISTER'),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Login link
-                        Center(
-                          child: RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: const TextStyle(
-                                fontFamily: 'Roboto',
-                                fontSize: 14,
-                                color: Colors.black,
-                                letterSpacing: 0.014,
+                        Text(
+                          'Create your Account',
+                          style: Theme.of(context).textTheme.headlineLarge
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
                               ),
-                              children: [
-                                const TextSpan(
-                                  text: 'Already have an account?\n',
-                                ),
-                                WidgetSpan(
-                                  child: GestureDetector(
-                                    onTap: widget.onLogin,
-                                    child: const Text(
-                                      'LOG IN',
-                                      style: TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        decoration: TextDecoration.underline,
-                                        letterSpacing: 0.014,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ),
-            ),
 
-            // Back button
-            Positioned(
-              left: 18,
-              top: 58,
-              child: GestureDetector(
-                onTap: widget.onBack,
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.chevron_left,
-                      color: Colors.white,
-                      size: 31,
+                  // White content panel
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(contentRadius),
+                        topRight: Radius.circular(contentRadius),
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Back',
-                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w300,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                    child: Padding(
+                      padding: EdgeInsets.all(horizontalPadding * 0.9),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: sectionGap),
 
-            // Title
-            Positioned(
-              left: 28,
-              top: 108,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Create your',
-                    style: Theme.of(context)
-                        .textTheme
-                        .displayLarge
-                        ?.copyWith(color: Colors.white),
-                  ),
-                  Text(
-                    'Account',
-                    style: Theme.of(context)
-                        .textTheme
-                        .displayLarge
-                        ?.copyWith(color: Colors.white),
+                            // Full Name field
+                            TextFormField(
+                              controller: _fullNameController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Full Name',
+                                helperText: '*Your name will not be disclosed',
+                              ),
+                              validator: RequiredValidator(
+                                errorText: 'Full name is required',
+                              ).call,
+                            ),
+                            SizedBox(height: sectionGap),
+
+                            // Username field
+                            TextFormField(
+                              controller: _usernameController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Username',
+                              ),
+                              validator: RequiredValidator(
+                                errorText: 'Username is required',
+                              ).call,
+                            ),
+                            SizedBox(height: sectionGap),
+
+                            // Email field
+                            TextFormField(
+                              controller: _emailController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Email Address',
+                              ),
+                              validator: MultiValidator([
+                                RequiredValidator(
+                                  errorText: 'Email is required',
+                                ),
+                                EmailValidator(
+                                  errorText: 'Enter a valid email',
+                                ),
+                              ]).call,
+                            ),
+                            SizedBox(height: sectionGap),
+
+                            // Password field
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Password',
+                              ),
+                              validator: RequiredValidator(
+                                errorText: 'Password is required',
+                              ).call,
+                            ),
+                            SizedBox(height: sectionGap),
+
+                            // Confirm Password field
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              obscureText: true,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Confirm Password',
+                              ),
+                              validator: (value) {
+                                if (value != _passwordController.text) {
+                                  return 'Passwords do not match';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: sectionGap * 2),
+
+                            // Register button
+                            SizedBox(
+                              width: double.infinity,
+                              height: buttonHeight,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                  shadowColor: Theme.of(
+                                    context,
+                                  ).colorScheme.shadow,
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: _isLoading ? null : _handleRegister,
+                                child: _isLoading
+                                    ? const CircularProgressIndicator()
+                                    : const Text('REGISTER'),
+                              ),
+                            ),
+                            SizedBox(height: sectionGap),
+
+                            // Login link
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: sectionGap),
+                                  Text(
+                                    'Already have an account?',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                        ),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: widget.onLogin,
+                                    icon: const Icon(Icons.person),
+                                    label: const Text('LOG IN'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
