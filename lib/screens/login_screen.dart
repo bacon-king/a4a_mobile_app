@@ -1,9 +1,7 @@
-import 'package:application_prototype/providers/app_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../widgets/navigation.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback? onBack;
@@ -33,193 +31,192 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() async {
+  void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    final response = await Supabase.instance.client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
-
-    if (response.user != null) {
-      // Refresh user to get latest metadata
-      await Supabase.instance.client.auth.refreshSession();
-      // Optionally, fetch user again
-      // final user = await Supabase.instance.client.auth.getUser();
-
-      Provider.of<AppStateProvider>(context, listen: false).setLoggedInEmail(email);
-
-      Fluttertoast.showToast(msg: 'Login successful!');
+      // Mock login success
+      Fluttertoast.showToast(
+        msg: 'Login successful!',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
       widget.onLoginSuccess?.call();
-    } else {
-      Fluttertoast.showToast(msg: 'Login failed!');
     }
-  }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: Theme.of(context).colorScheme.onSurface,
+              onPressed: widget.onBack,
+            );
+          },
+        ),
+      ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Background white container
-            Positioned(
-              left: 0,
-              top: 196,
-              child: Container(
-                width: 412,
-                height: 721,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(45),
-                    topRight: Radius.circular(45),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(28.0),
-                  child: Form(
-                    key: _formKey,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenWidth = constraints.maxWidth;
+            final screenHeight = constraints.maxHeight;
+
+            final horizontalPadding = screenWidth * 0.07; // 7% side padding
+            final contentRadius = screenWidth * 0.11; // rounded top corners
+            final sectionGap = screenHeight * 0.02; // vertical gaps
+            screenHeight * 0.18; // where white panel starts
+            final buttonHeight = 50.0; // keep comfortable touch target
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
-
-                        // Email field
-                        TextFormField(
-                          controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email Address',
-                            hintText: 'john_smith@gmail.com',
-                          ),
-                          validator: MultiValidator([
-                            RequiredValidator(errorText: 'Email is required'),
-                            EmailValidator(errorText: 'Enter a valid email'),
-                          ]).call,
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Password field
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            hintText: '********',
-                          ),
-                          validator: RequiredValidator(
-                            errorText: 'Password is required',
-                          ).call,
-                        ),
-                        const SizedBox(height: 40),
-
-                        // Login button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _handleLogin,
-                            child: const Text('LOG IN'),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Register link
-                        Center(
-                          child: RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              style: const TextStyle(
-                                fontFamily: 'Roboto',
-                                fontSize: 14,
-                                color: Colors.black,
-                                letterSpacing: 0.014,
+                        Text(
+                          'Log into your Account',
+                          style: Theme.of(context).textTheme.headlineLarge
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
                               ),
-                              children: [
-                                const TextSpan(
-                                  text: "Don't have an account?\n",
-                                ),
-                                WidgetSpan(
-                                  child: GestureDetector(
-                                    onTap: widget.onRegister,
-                                    child: const Text(
-                                      'REGISTER',
-                                      style: TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        decoration: TextDecoration.underline,
-                                        letterSpacing: 0.014,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ),
-            ),
 
-            // Back button
-            Positioned(
-              left: 18,
-              top: 58,
-              child: GestureDetector(
-                onTap: widget.onBack,
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.chevron_left,
-                      color: Colors.white,
-                      size: 31,
+                  // White content panel
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(contentRadius),
+                        topRight: Radius.circular(contentRadius),
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Back',
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w300,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                    child: Padding(
+                      padding: EdgeInsets.all(horizontalPadding * 0.9),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: sectionGap),
 
-            // Title
-            Positioned(
-              left: 28,
-              top: 108,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Log into your',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.displayLarge?.copyWith(color: Colors.white),
-                  ),
-                  Text(
-                    'Account',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.displayLarge?.copyWith(color: Colors.white),
+                            // Email field
+                            TextFormField(
+                              controller: _emailController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Email Address',
+                              ),
+                              validator: MultiValidator([
+                                RequiredValidator(
+                                  errorText: 'Email is required',
+                                ),
+                                EmailValidator(
+                                  errorText: 'Enter a valid email',
+                                ),
+                              ]).call,
+                            ),
+                            SizedBox(height: sectionGap),
+
+                            // Password field
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Password',
+                              ),
+                              validator: RequiredValidator(
+                                errorText: 'Password is required',
+                              ).call,
+                            ),
+                            SizedBox(height: screenHeight * .30),
+
+                            // Login button
+                            SizedBox(
+                              width: double.infinity,
+                              height: buttonHeight,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
+                                  foregroundColor: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                  shadowColor: Theme.of(
+                                    context,
+                                  ).colorScheme.shadow,
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: /*_handleLogin*/ () {
+                                  bool loginSuccess = true;
+
+                                  if (loginSuccess) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const MainNavigation(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text('LOG IN'),
+                              ),
+                            ),
+                            SizedBox(height: sectionGap),
+
+                            // Login link
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: sectionGap),
+                                  Text(
+                                    "Don't have an account?",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                        ),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: widget.onRegister,
+                                    icon: const Icon(Icons.person),
+                                    label: const Text('Register'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

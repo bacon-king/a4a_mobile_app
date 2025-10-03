@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
-import '../widgets/bottom_navigation_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeFeedScreen extends StatefulWidget {
@@ -52,13 +51,17 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 
     try {
       final random = Random();
-      final selectedQuery = _searchQueries[random.nextInt(_searchQueries.length)];
-      final results = await _searchGoogle(selectedQuery['query']!, int.parse(selectedQuery['num_results']!));
+      final selectedQuery =
+          _searchQueries[random.nextInt(_searchQueries.length)];
+      final results = await _searchGoogle(
+        selectedQuery['query']!,
+        int.parse(selectedQuery['num_results']!),
+      );
       final newArticles = _parseSearchResults(results);
-      
+
       setState(() {
         _articles.addAll(
-          newArticles.map((e) => e.map((k, v) => MapEntry(k, v.toString())))
+          newArticles.map((e) => e.map((k, v) => MapEntry(k, v.toString()))),
         );
         _isInitialLoading = false;
       });
@@ -83,14 +86,15 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 
     try {
       final random = Random();
-      final selectedQuery = _searchQueries[random.nextInt(_searchQueries.length)];
+      final selectedQuery =
+          _searchQueries[random.nextInt(_searchQueries.length)];
       final results = await _searchGoogle(selectedQuery['query']!, _pageSize);
       final newArticles = _parseSearchResults(results);
-      
+
       if (newArticles.isNotEmpty) {
         setState(() {
           _articles.addAll(
-            newArticles.map((e) => e.map((k, v) => MapEntry(k, v.toString())))
+            newArticles.map((e) => e.map((k, v) => MapEntry(k, v.toString()))),
           );
           _isLoading = false;
         });
@@ -114,7 +118,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
   Future<List<dynamic>> _searchGoogle(String query, int numResults) async {
     const apiKey = 'AIzaSyBHZW3DF6fMJ8nC2Jj2ng7iLl2B7XXW9YM';
     const cx = '3175592874fc14236';
-    final url = Uri.parse('https://www.googleapis.com/customsearch/v1?key=$apiKey&cx=$cx&q=${Uri.encodeComponent(query)}&num=$numResults');
+    final url = Uri.parse(
+      'https://www.googleapis.com/customsearch/v1?key=$apiKey&cx=$cx&q=${Uri.encodeComponent(query)}&num=$numResults',
+    );
     final response = await http.get(url);
     if (response.statusCode == 200) {
       return json.decode(response.body)['items'] ?? [];
@@ -141,7 +147,8 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
 
   // Scroll listener for infinite loading
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       _loadMoreArticles();
     }
   }
@@ -181,7 +188,12 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                 ),
                 child: SingleChildScrollView(
                   controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(28, 28, 28, 100), // Extra bottom padding for nav bar & loader
+                  padding: const EdgeInsets.fromLTRB(
+                    28,
+                    28,
+                    28,
+                    100,
+                  ), // Extra bottom padding for nav bar & loader
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -191,15 +203,19 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
                       else if (_articles.isEmpty)
                         const Center(child: Text('No articles found'))
                       else
-                        ..._articles.map((article) => Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: _buildArticleCard(
-                            title: article['title']!,
-                            source: article['source']!,
-                            imageUrl: article['imageUrl']!,
-                            onTap: () => _openArticle(article['link']!),
-                          ),
-                        ),).toList(),
+                        ..._articles
+                            .map(
+                              (article) => Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: _buildArticleCard(
+                                  title: article['title']!,
+                                  source: article['source']!,
+                                  imageUrl: article['imageUrl']!,
+                                  onTap: () => _openArticle(article['link']!),
+                                ),
+                              ),
+                            )
+                            .toList(),
                     ],
                   ),
                 ),
@@ -212,18 +228,9 @@ class _HomeFeedScreenState extends State<HomeFeedScreen> {
               top: 108,
               child: Text(
                 'Your Feed',
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(color: Colors.white),
-              ),
-            ),
-
-            // Bottom Navigation
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: CustomBottomNavigationBar(
-                currentIndex: 0,
-                onNavigate: widget.onNavigate,
+                style: Theme.of(
+                  context,
+                ).textTheme.displayLarge?.copyWith(color: Colors.white),
               ),
             ),
 

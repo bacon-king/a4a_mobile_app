@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/bottom_navigation_bar.dart';
 
 class ChangeNotificationsScreen extends StatefulWidget {
   final Function(String)? onNavigate;
@@ -7,7 +6,8 @@ class ChangeNotificationsScreen extends StatefulWidget {
   const ChangeNotificationsScreen({super.key, this.onNavigate});
 
   @override
-  State<ChangeNotificationsScreen> createState() => _ChangeNotificationsScreenState();
+  State<ChangeNotificationsScreen> createState() =>
+      _ChangeNotificationsScreenState();
 }
 
 class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
@@ -19,12 +19,15 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
   bool _editingAppointments = false;
   bool _editingForum = false;
 
-  final TextEditingController _medicationController =
-      TextEditingController(text: 'Receive notifications for medication.');
-  final TextEditingController _appointmentsController =
-      TextEditingController(text: 'Receive notifications for clinical appointments.');
-  final TextEditingController _forumController =
-      TextEditingController(text: 'Receive notifications for forum interactions.');
+  final TextEditingController _medicationController = TextEditingController(
+    text: 'Receive notifications for medication.',
+  );
+  final TextEditingController _appointmentsController = TextEditingController(
+    text: 'Receive notifications for clinical appointments.',
+  );
+  final TextEditingController _forumController = TextEditingController(
+    text: 'Receive notifications for forum interactions.',
+  );
 
   @override
   void dispose() {
@@ -53,7 +56,8 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
               top: 155,
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: screenHeight - 155 - effectiveNavBarHeight - safeAreaBottom,
+                height:
+                    screenHeight - 155 - effectiveNavBarHeight - safeAreaBottom,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -126,10 +130,10 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
               child: Text(
                 'Change Notifications',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
 
@@ -142,17 +146,6 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
               bottom: keyboardOpen ? 24 + safeAreaBottom : 90,
               child: _buildSaveButton(),
             ),
-
-            // Bottom Navigation
-            if (!keyboardOpen)
-              Positioned(
-                left: 0,
-                bottom: 0,
-                child: CustomBottomNavigationBar(
-                  currentIndex: 2,
-                  onNavigate: widget.onNavigate,
-                ),
-              ),
           ],
         ),
       ),
@@ -269,12 +262,10 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
           isEditing
               ? _buildEditableTextField(
                   controller: controller,
-                  onSave: onTapEdit, // placeholder, will be overridden by specific calls
+                  onSave:
+                      onTapEdit, // placeholder, will be overridden by specific calls
                 )
-              : _buildReadOnlyText(
-                  text: controller.text,
-                  onEdit: onTapEdit,
-                ),
+              : _buildReadOnlyText(text: controller.text, onEdit: onTapEdit),
       ],
     );
   }
@@ -324,7 +315,7 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
-              fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -333,7 +324,10 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
     );
   }
 
-  Widget _buildReadOnlyText({required String text, required VoidCallback onEdit}) {
+  Widget _buildReadOnlyText({
+    required String text,
+    required VoidCallback onEdit,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -384,7 +378,8 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
       enabled: _appointmentsEnabled,
       onToggle: (v) => setState(() => _appointmentsEnabled = v),
       isEditing: _editingAppointments,
-      onTapEdit: () => setState(() => _editingAppointments = !_editingAppointments),
+      onTapEdit: () =>
+          setState(() => _editingAppointments = !_editingAppointments),
       controller: _appointmentsController,
     );
   }
@@ -402,5 +397,3 @@ class _ChangeNotificationsScreenState extends State<ChangeNotificationsScreen> {
     );
   }
 }
-
-

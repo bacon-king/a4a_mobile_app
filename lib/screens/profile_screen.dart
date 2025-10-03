@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state_provider.dart';
-import '../widgets/bottom_navigation_bar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Function(String)? onNavigate;
 
-  const ProfileScreen({
-    super.key,
-    this.onNavigate,
-  });
+  const ProfileScreen({super.key, this.onNavigate});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -28,32 +24,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchUserInfo() async {
-  final supabase = Supabase.instance.client;
-  final user = supabase.auth.currentUser;
-  if (user != null) {
-    // ...fetch logic...
-    if (mounted) {
-      setState(() {
-        email = user.email ?? 'Unknown';
-        username = user.userMetadata?['username'] ?? 'Unknown';
-        isLoading = false;
-      });
-    }
-  } else {
-    if (mounted) {
-      setState(() {
-        email = 'Unknown';
-        username = 'Unknown';
-        isLoading = false;
-      });
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
+    if (user != null) {
+      // ...fetch logic...
+      if (mounted) {
+        setState(() {
+          email = user.email ?? 'Unknown';
+          username = user.userMetadata?['username'] ?? 'Unknown';
+          isLoading = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          email = 'Unknown';
+          username = 'Unknown';
+          isLoading = false;
+        });
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final safeAreaTop = MediaQuery.of(context).padding.top;
     final safeAreaBottom = MediaQuery.of(context).padding.bottom;
     final navBarHeight = 76.0;
 
@@ -70,7 +65,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     top: 155,
                     child: Container(
                       width: MediaQuery.of(context).size.width,
-                      height: screenHeight - 155 - navBarHeight - safeAreaBottom,
+                      height:
+                          screenHeight - 155 - navBarHeight - safeAreaBottom,
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
@@ -79,30 +75,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(28.0, 28.0, 28.0, 40.0), // Reduced bottom padding
+                        padding: const EdgeInsets.fromLTRB(
+                          28.0,
+                          28.0,
+                          28.0,
+                          40.0,
+                        ), // Reduced bottom padding
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 20),
-                            
+
                             // Profile Card
                             _buildProfileCard(),
-                            
+
                             const SizedBox(height: 32),
-                            
+
                             // General Settings Section
                             _buildGeneralSettingsSection(),
-                            
+
                             const SizedBox(height: 32),
-                            
+
                             // Preferences Section
                             _buildPreferencesSection(),
-                            
+
                             const SizedBox(height: 32),
-                            
+
                             // Logout Button
                             _buildLogoutButton(),
-                            
+
                             const SizedBox(height: 32),
                           ],
                         ),
@@ -118,16 +119,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: Theme.of(
                         context,
                       ).textTheme.displayLarge?.copyWith(color: Colors.white),
-                    ),
-                  ),
-
-                  // Bottom Navigation
-                  Positioned(
-                    left: 0,
-                    bottom: 0, 
-                    child: CustomBottomNavigationBar(
-                      currentIndex: 2,
-                      onNavigate: widget.onNavigate,
                     ),
                   ),
                 ],
@@ -157,11 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               shape: BoxShape.circle,
               border: Border.all(color: Colors.black, width: 1),
             ),
-            child: const Icon(
-              Icons.person,
-              size: 40,
-              color: Colors.black,
-            ),
+            child: const Icon(Icons.person, size: 40, color: Colors.black),
           ),
           const SizedBox(width: 18),
           Expanded(
@@ -266,14 +253,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: Colors.black,
-              size: 24,
-            ),
-            
+            Icon(icon, color: Colors.black, size: 24),
+
             const SizedBox(width: 19),
-            
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,12 +281,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            
-            const Icon(
-              Icons.chevron_right,
-              color: Colors.black,
-              size: 24,
-            ),
+
+            const Icon(Icons.chevron_right, color: Colors.black, size: 24),
           ],
         ),
       ),
@@ -317,11 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: const Row(
           children: [
-            Icon(
-              Icons.notifications_outlined,
-              color: Colors.black,
-              size: 24,
-            ),
+            Icon(Icons.notifications_outlined, color: Colors.black, size: 24),
             SizedBox(width: 19),
             Expanded(
               child: Column(
@@ -347,11 +322,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: Colors.black,
-              size: 24,
-            ),
+            Icon(Icons.chevron_right, color: Colors.black, size: 24),
           ],
         ),
       ),
@@ -372,18 +343,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           borderRadius: BorderRadius.circular(40),
           onTap: () {
             // Handle logout
-            Provider.of<AppStateProvider>(context, listen: false)
-                .navigateToScreen('login');
+            Provider.of<AppStateProvider>(
+              context,
+              listen: false,
+            ).navigateToScreen('login');
           },
           child: const Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.logout,
-                  color: Colors.white,
-                  size: 24,
-                ),
+                Icon(Icons.logout, color: Colors.white, size: 24),
                 SizedBox(width: 8),
                 Text(
                   'Logout',
